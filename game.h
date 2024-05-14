@@ -26,13 +26,11 @@ void initializeUnits(Unit units[2][NUM_UNITS]);
 
 void printBoard(Unit units[2][NUM_UNITS]);
 
-bool moveUnit(int team, int unitIndex, int targetX, int targetY); // Déplace une unité vers les coordonées cible
+bool moveUnit(Unit units[NUM_TEAMS][NUM_UNITS], int team, char name, int targetX, int targetY); // Déplace une unité vers les coordonées cible
 
 bool isInRange(Unit *attacker, Unit *defender); // Vérifie si l'ennemi est atteignable
 
-bool attackUnit(int team, int unitIndex, int targetX, int targetY); // Attaque l'unité qui se trouve aux coordonéées cibles
-
-//void gameLoop
+bool attackUnit(Unit units[NUM_TEAMS][NUM_UNITS], int team, char atkName, char targetName); // Attaque l'unité qui se trouve aux coordonéées cibles
 
 bool checkEndGame(Unit units[2][NUM_UNITS]); // Vérifie les conditions de fin de jeu
 
