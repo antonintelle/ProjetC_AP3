@@ -3,6 +3,15 @@
 #include "gameMotor.h"
 #include <stdio.h>
 
+void mainMenu() {
+    printf("\n\n1. Joueur VS IA\n");
+    printf("2. Joueur 1 VS Joueur 2\n");
+    printf("3. IA 1 VS IA 2\n");
+    printf("4. Options\n");
+    printf("5. A propos\n");
+    printf("6. Quitter\n");
+}
+
 void startSinglePlayerGame() {
     int roundCount = 0;
     initializeUnits();
