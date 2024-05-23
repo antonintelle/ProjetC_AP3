@@ -1,21 +1,21 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "game.h"
+#include "gameMotor.h"
 
 void main_menu() {
-    printf("1. Start Single Player Game\n");
-    printf("2. Start Two Player Game\n");
-    printf("3. Start AI vs AI Test\n");
+    printf("\n\n1. Joueur VS IA\n");
+    printf("2. Joueur 1 VS Joueur 2\n");
+    printf("3. IA 1 VS IA 2\n");
     printf("4. Options\n");
-    printf("5. About\n");
-    printf("6. Quit\n");
+    printf("5. A propos\n");
+    printf("6. Quitter\n");
 }
 
 int main() {
     int choice;
     while (1) {
         main_menu();
-        printf("Choose an option: ");
+        printf("\tEntrez an option: ");
         scanf("%d", &choice);
 
         switch (choice) {
@@ -35,11 +35,11 @@ int main() {
                 showAbout();
                 break;
             case 6:
-                printf("Exiting game.\n");
+                printf("Exiting game...\n");
                 exit(0);
                 break;
             default:
-                printf("Invalid choice. Please try again.\n");
+                printf("Invalid choice. Please try again...\n");
                 break;
         }
     }

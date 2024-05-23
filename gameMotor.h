@@ -1,3 +1,6 @@
+#ifndef GAMEMOTOR_H
+#define GAMEMOTOR_H
+
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
@@ -33,26 +36,21 @@ typedef struct {
 extern Unit units[NUM_TEAMS][NUM_UNITS];
 
 void initializeUnits();
-bool isInRange(Unit *attacker, Unit *defender);
 void printBoard();
 
-bool moveUnit(int team, char name, int targetX, int targetY);
+bool isInRange(Unit *attacker, Unit *defender);
+bool ennemyInRange(int team, char atkName);
+
+bool moveUnit(int team, char unitName, int targetX, int targetY);
 bool attackUnit(int team, char atkName, char targetName);
 
-bool checkEndGame();
-int determineWinner();
-bool isTired(char unitName, int team);
+bool isTired(int team, char unitName);
 void isAllTeamTired(int team);
-
-void startSinglePlayerGame();
-void startTwoPlayerGame();
-void startAIVsAITest();
-void announceWinner();
-void showOptions();
-void showAbout();
-
-void aiTurn(int aiPlayer);
-void playerTurn(int currentPlayer);
 
 int evaluatePosition(int aiTeam);
 bool isValidMove(int x, int y);
+
+bool checkEndGame(int roundCount);
+int determineWinner();
+
+#endif //GAMEMOTOR_H
