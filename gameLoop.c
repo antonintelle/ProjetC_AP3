@@ -4,39 +4,37 @@
 
 //
 void aiTurn(int aiTeam) {
-    int bestScore = INT_MIN;
-    Move possibleMoves[100];
-    int numPossibleMoves = 0;
+    int bestScore = -10000;
+    char bestUnit = ' ';
+    int bestX = -1, bestY = -1;
 
     // Iterate over all units in the AI team
     for (int i = 0; i < NUM_UNITS; i++) {
-        Unit *unit = &units[aiTeam][i];
-        if (unit->health > 0 && !unit->tired) {
+        if (units[aiTeam][i].health > 0 && !units[aiTeam][i].tired) {
+            Unit *unit = &units[aiTeam][i];
             int originalX = unit->posX;
             int originalY = unit->posY;
 
-            // Explore all possible moves within the movement range
+            // Iterate over all possible moves within the unit's movement range
             for (int dx = -unit->movement; dx <= unit->movement; dx++) {
                 for (int dy = -unit->movement; dy <= unit->movement; dy++) {
-                    int targetX = originalX + dx;
-                    int targetY = originalY + dy;
-                    if (isValidMove(targetX, targetY) && abs(dx) + abs(dy) <= unit->movement) {
-                        unit->posX = targetX; // Temp move for scoring
+                    int targetX = unit->posX + dx;
+                    int targetY = unit->posY + dy;
+                    if (abs(dx) + abs(dy) <= unit->movement && targetX >= 0 && targetX < COLS && targetY >= 0 && targetY < ROWS) {
+                        // Temporarily move the unit to the target position
+                        unit->posX = targetX;
                         unit->posY = targetY;
                         int score = evaluatePosition(aiTeam);
-
-                        unit->posX = originalX; // Reset position
+                        // Move the unit back to its original position
+                        unit->posX = originalX;
                         unit->posY = originalY;
 
-                        // Collect all moves with the best score
+                        // If the new score is better, update the best move
                         if (score > bestScore) {
                             bestScore = score;
-                            numPossibleMoves = 0;  // Reset the array for best moves
-                        }
-                        if (score >= bestScore) {
-                            if (numPossibleMoves < 100) {
-                                possibleMoves[numPossibleMoves++] = (Move){unit->name, targetX, targetY};
-                            }
+                            bestUnit = unit->name;
+                            bestX = targetX;
+                            bestY = targetY;
                         }
                     }
                 }
@@ -44,14 +42,30 @@ void aiTurn(int aiTeam) {
         }
     }
 
-    // Randomly choose from the best moves, ensuring different outcomes
-    if (numPossibleMoves > 0) {
-        int chosenIndex = rand() % numPossibleMoves;
-        Move chosenMove = possibleMoves[chosenIndex];
-        moveUnit(aiTeam, chosenMove.unitName, chosenMove.x, chosenMove.y);
-        printf("AI moved unit %c to (%d, %d) with score %d\n", chosenMove.unitName, chosenMove.x, chosenMove.y, bestScore);
+    // Execute the best move found
+    if (bestUnit != ' ') {
+        moveUnit(aiTeam, bestUnit, bestX, bestY);
+        printf("AI moved unit %c to (%d, %d) with score %d\n", bestUnit, bestX, bestY, bestScore);
     } else {
-        printf("No valid moves available for AI.\n");
+        printf("AI did not find a valid move.\n");
+    }
+
+    // Check if the AI can attack after moving
+    for (int i = 0; i < NUM_UNITS; i++) {
+        if (units[1 - aiTeam][i].health > 0) {
+            Unit *attacker = NULL;
+            for (int j = 0; j < NUM_UNITS; j++) {
+                if (units[aiTeam][j].name == bestUnit) {
+                    attacker = &units[aiTeam][j];
+                    break;
+                }
+            }
+            if (attacker && isInRange(attacker, &units[1 - aiTeam][i])) {
+                attackUnit(aiTeam, bestUnit, units[1 - aiTeam][i].name);
+                printf("AI unit %c attacked enemy unit %c\n", bestUnit, units[1 - aiTeam][i].name);
+                break;
+            }
+        }
     }
 }
 
