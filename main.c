@@ -1,20 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "gameMotor.h"
-
-void main_menu() {
-    printf("\n\n1. Joueur VS IA\n");
-    printf("2. Joueur 1 VS Joueur 2\n");
-    printf("3. IA 1 VS IA 2\n");
-    printf("4. Options\n");
-    printf("5. A propos\n");
-    printf("6. Quitter\n");
-}
+#include "menu.h"
 
 int main() {
     int choice;
     while (1) {
-        main_menu();
+        mainMenu();
         printf("\tEntrez an option: ");
         scanf("%d", &choice);
 
