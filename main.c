@@ -1,30 +1,46 @@
 #include <stdio.h>
-#include <stdbool.h>
-#include "game.h"
- 
-#include <stdio.h>
 #include <stdlib.h>
- 
- 
+#include "game.h"
+
+void main_menu() {
+    printf("1. Start Single Player Game\n");
+    printf("2. Start Two Player Game\n");
+    printf("3. Start AI vs AI Test\n");
+    printf("4. Options\n");
+    printf("5. About\n");
+    printf("6. Quit\n");
+}
+
 int main() {
-    Unit units[NUM_TEAMS][NUM_UNITS]; // Deux équipes de 4 unités chacune
-    initializeUnits(units);   // Initialiser les unités sur le plateau
-    printBoard(units);
+    int choice;
+    while (1) {
+        main_menu();
+        printf("Choose an option: ");
+        scanf("%d", &choice);
 
-    // Déplacer une unité
-    if (moveUnit(units, 0, 'B', 3, 1)) {
-        printf("Deplacement reussi\n");
-    } else {
-        printf("Deplacement echoue\n");
+        switch (choice) {
+            case 1:
+                startSinglePlayerGame();
+                break;
+            case 2:
+                startTwoPlayerGame();
+                break;
+            case 3:
+                startAIVsAITest();
+                break;
+            case 4:
+                showOptions();
+                break;
+            case 5:
+                showAbout();
+                break;
+            case 6:
+                printf("Exiting game.\n");
+                exit(0);
+                break;
+            default:
+                printf("Invalid choice. Please try again.\n");
+                break;
+        }
     }
-    printBoard(units);
-
-    if(attackUnit(units, 0, 'B', 'W')){
-        printf("attaque reussie");
-    }
-    else{
-        printf("attaque ratee");
-    }
-
-    return 0;
 }

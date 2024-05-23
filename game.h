@@ -1,37 +1,58 @@
 #include <stdio.h>
 #include <stdbool.h>
+#include <stdlib.h>
+#include <time.h>
+#include <stdlib.h>
+#include <time.h>
+
 #define ROWS 5
 #define COLS 7
 #define NUM_UNITS 4
 #define NUM_TEAMS 2
- 
+
 typedef struct {
-    char name;       // Nom de l'unité sur la grille
-    char type;       // Type de l'unité : 'S' pour soldat, 'A' pour archer, 'F' pour filou
-    int health;      // Points de vie
-    int attack;      // Puissance d'attaque
-    int defense;     // Défense
-    int movement;    // Nombre de cases de déplacement possible
-    int range;       // Portée d'attaque
-    bool isTired;    // Si l'unité est fatiguée ou non
-    int posX;        // Position X sur la grille
-    int posY;        // Position Y sur la grille
+    char name;
+    char type;
+    int team ;
+    int attack;
+    int defense;
+    int range;
+    int movement;
+    int health;
+    bool tired;
+    int posX;
+    int posY;
 } Unit;
- 
+
+typedef struct {
+    char unitName;
+    int x;
+    int y;
+} Move;
+
 extern Unit units[NUM_TEAMS][NUM_UNITS];
 
+void initializeUnits();
+bool isInRange(Unit *attacker, Unit *defender);
+void printBoard();
 
-// Déclarations des unités
-void initializeUnits(Unit units[2][NUM_UNITS]);
+bool moveUnit(int team, char name, int targetX, int targetY);
+bool attackUnit(int team, char atkName, char targetName);
 
-void printBoard(Unit units[2][NUM_UNITS]);
+bool checkEndGame();
+int determineWinner();
+bool isTired(char unitName, int team);
+void isAllTeamTired(int team);
 
-bool moveUnit(Unit units[NUM_TEAMS][NUM_UNITS], int team, char name, int targetX, int targetY); // Déplace une unité vers les coordonées cible
+void startSinglePlayerGame();
+void startTwoPlayerGame();
+void startAIVsAITest();
+void announceWinner();
+void showOptions();
+void showAbout();
 
-bool isInRange(Unit *attacker, Unit *defender); // Vérifie si l'ennemi est atteignable
+void aiTurn(int aiPlayer);
+void playerTurn(int currentPlayer);
 
-bool attackUnit(Unit units[NUM_TEAMS][NUM_UNITS], int team, char atkName, char targetName); // Attaque l'unité qui se trouve aux coordonéées cibles
-
-bool checkEndGame(Unit units[2][NUM_UNITS]); // Vérifie les conditions de fin de jeu
-
-int determineWinner(Unit units[2][NUM_UNITS]); //  Détermine le vainqueur
+int evaluatePosition(int aiTeam);
+bool isValidMove(int x, int y);
