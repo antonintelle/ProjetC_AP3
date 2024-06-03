@@ -13,8 +13,7 @@ void drawUnits(Unit *units[NUM_TEAMS][NUM_UNITS])
     {
         for (int i = 0; i < NUM_UNITS; i++)
         {
-            Unit *unit = units[team][i];
-            if (units[team][i]->health >= 0)
+            if (units[team][i]->health > 0)
             {
                 if (team == 0)
                 {
@@ -333,9 +332,17 @@ int main()
             break;
 
         case IATest:
+            if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+            {
+                CurrentScreen = TitleScreen;
+            }
             break;
 
         case Options:
+            if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+            {
+                CurrentScreen = TitleScreen;
+            }
             break;
 
         case Credits:
@@ -393,9 +400,11 @@ int main()
             if (checkEndGame(nbRound, units))
             {
                 ClearBackground(BLACK);
-                // char *winner = [ "bleu", "rouge" ][determineWinner()];
-                // DrawText(strcat("L'équipe ", *winner), screenWidth / 2 - MeasureText(strcat("L'équipe ", *winner), 100) / 2, screenHeight / 2 - 100, 100, WHITE);
-                // DrawText("a gagné !", screenWidth / 2 - MeasureText("a gagné !", 100) / 2, screenHeight / 2, 100, WHITE);
+                if (determineWinner(units) == 1)
+                    DrawText("L'équipe bleu", screenWidth / 2 - MeasureText("L'équipe bleu", 100) / 2, screenHeight / 2 - 100, 100, WHITE);
+                else
+                    DrawText("L'équipe rouge", screenWidth / 2 - MeasureText("L'équipe rouge", 100) / 2, screenHeight / 2 - 100, 100, WHITE);
+                DrawText("a gagné !", screenWidth / 2 - MeasureText("a gagné !", 100) / 2, screenHeight / 2, 100, WHITE);
             }
             else
             {

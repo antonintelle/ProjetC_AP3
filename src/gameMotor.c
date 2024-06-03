@@ -234,6 +234,7 @@ bool isTired(int team, char unitName, Unit *units[NUM_TEAMS][NUM_UNITS])
 void isAllTeamTired(int team, Unit *units[NUM_TEAMS][NUM_UNITS])
 {
     int tiredCount = 0;
+    int aliveCount = 0;
     // Compte le nombre d'unité fatiguée dans une équipe
     for (int i = 0; i < NUM_UNITS; i++)
     {
@@ -241,9 +242,13 @@ void isAllTeamTired(int team, Unit *units[NUM_TEAMS][NUM_UNITS])
         {
             tiredCount++;
         }
+        if (units[team][i]->health > 0)
+        {
+            aliveCount++;
+        }
     }
     // Si elles sont toutes fatiguée, remise à 0
-    if (tiredCount == NUM_UNITS)
+    if (tiredCount == aliveCount)
     {
         for (int i = 0; i < NUM_UNITS; i++)
         {
