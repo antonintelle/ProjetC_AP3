@@ -8,4 +8,6 @@ void startAIVsAITest();
 void showOptions();
 void showAbout();
 
+void announceWinner();
+
 #endif //MENU_H

@@ -1,6 +1,6 @@
-#include "menu.h"
-#include "gameLoop.h"
-#include "gameMotor.h"
+#include "h/menu.h"
+#include "h/gameLoop.h"
+#include "h/gameMotor.h"
 #include <stdio.h>
 
 void mainMenu() {
@@ -101,4 +101,17 @@ void showAbout() {
     printf("Developed by: Antonin Telle, Benjamin Boudry, Imen Mlika, Lucas Gimbert\n");
     printf("Version: 1.0\n");
     printf("Pour plus d'informations, visitez notre site: [website.com]\n");
+}
+
+// Message d'annonce de l'équipe vainqueur
+void announceWinner() {
+    int winner = determineWinner();
+    if (winner == 1) {
+        printf("Player 1 wins!\n");
+    } else if (winner == 2) {
+        printf("Player 2 wins!\n");
+    } else {
+        printf("It's a tie!\n");
+    }
+    printf("\n-----------------------------------------\n");
 }
