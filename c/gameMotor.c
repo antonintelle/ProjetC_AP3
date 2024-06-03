@@ -112,7 +112,9 @@ bool attackUnit(int team, char atkName, char targetName) {
         }
     }
 
-    if (isInRange(attacker, defender)) {
+    if (attacker
+    && defender
+    &&isInRange(attacker, defender)) {
 
         // Les dégâts infligés sont égaux à la puissance du pion qui frappe réduits de la défense du pion qui est frappé
         int damage = attacker->attack - defender->defense;
