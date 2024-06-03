@@ -35,20 +35,20 @@ void aiTurn(int aiTeam) {
                         int bestScoreAttack = 0;
                         int scoreWithoutAttack = evaluateScore(aiTeam);
 
-                        for (int i = 0; i < NUM_UNITS; i++) {
-                            if (isInRange(unit, &units[adv][i])){ // Si un ennemi est à portée on test de l'attaquer
+                        for (int ennemyUnit = 0; ennemyUnit < NUM_UNITS; ennemyUnit++) {
+                            if (isInRange(unit, &units[adv][ennemyUnit])){ // Si un ennemi est à portée on test de l'attaquer
 
-                                int originalEnnemyHealth = units[adv][i].health;
+                                int originalEnnemyHealth = units[adv][ennemyUnit].health;
                                 int originalHealth = unit->health;
 
-                                if (attackUnit(aiTeam, unit->name, units[adv][i].name)) {
+                                if (attackUnit(aiTeam, unit->name, units[adv][ennemyUnit].name)) {
                                     if (evaluateScore(aiTeam) > bestScoreAttack) { // Si l'attaque mène à un meilleur score
                                         attackWithGoodScore = true; // Pour effectuer l'attaque si le score est meilleur que si l'on attaque pas
                                         bestScoreAttack = evaluateScore(aiTeam);
-                                        ennemyToAttack = units[adv][i].name;  // Nom de l'ennemi à attaquer pour avoir le meilleur score
+                                        ennemyToAttack = units[adv][ennemyUnit].name;  // Nom de l'ennemi à attaquer pour avoir le meilleur score
                                     }
                                     // Remise à l'origine des vies des unités
-                                    units[adv][i].health = originalEnnemyHealth;
+                                    units[adv][ennemyUnit].health = originalEnnemyHealth;
                                     unit->health = originalHealth;
                                 }
                             }
