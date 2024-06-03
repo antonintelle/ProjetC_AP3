@@ -1,12 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "menu.h"
+#include "h/menu.h"
 
 int main() {
     int choice;
     while (1) {
         mainMenu();
-        printf("\tEntrez an option: ");
+        printf("\tEntrez une option: ");
         scanf("%d", &choice);
 
         switch (choice) {
@@ -28,7 +28,6 @@ int main() {
             case 6:
                 printf("Exiting game...\n");
                 exit(0);
-                break;
             default:
                 printf("Invalid choice. Please try again...\n");
                 break;

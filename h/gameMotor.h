@@ -27,12 +27,6 @@ typedef struct {
     int posY;
 } Unit;
 
-typedef struct {
-    char unitName;
-    int x;
-    int y;
-} Move;
-
 extern Unit units[NUM_TEAMS][NUM_UNITS];
 
 void initializeUnits();
@@ -46,9 +40,6 @@ bool attackUnit(int team, char atkName, char targetName);
 
 bool isTired(int team, char unitName);
 void isAllTeamTired(int team);
-
-int evaluatePosition(int aiTeam);
-bool isValidMove(int x, int y);
 
 bool checkEndGame(int roundCount);
 int determineWinner();

@@ -1,22 +1,22 @@
-#include "gameMotor.h"
+#include "h/gameMotor.h"
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
 
 Unit units[NUM_TEAMS][NUM_UNITS];
 
-// Initialisation des unités (solats, arcgers, filous)
+// Initialisation des unités (solats, archers, filous)
 void initializeUnits() {
     // Player 1
     units[0][0] = (Unit){'A', 'A', 0, 3, 1, 3, 2, 3, false, 0, 1};
     units[0][1] = (Unit){'B', 'S', 0, 2, 3, 1, 2, 5, false, 1, 1};
-    units[0][2] = (Unit){'C', 'F', 0, 4, 0, 1, 4, 5, false, 0, 3};
-    units[0][3] = (Unit){'D', 'S', 0, 2, 3, 1, 2, 5, false, 1, 3};
+    units[0][2] = (Unit){'C', 'F', 0, 4, 0, 1, 4, 5, false, 0, ROWS-2};
+    units[0][3] = (Unit){'D', 'S', 0, 2, 3, 1, 2, 5, false, 1, ROWS-2};
     // Player 2
-    units[1][0] = (Unit){'W', 'S', 1, 2, 3, 1, 2, 5, false, 5, 1};
-    units[1][1] = (Unit){'X', 'A', 1, 3, 1, 3, 2, 3, false, 6, 1};
-    units[1][2] = (Unit){'Y', 'S', 1, 2, 3, 1, 2, 5, false, 5, 3};
-    units[1][3] = (Unit){'Z', 'F', 1, 4, 0, 1, 4, 5, false, 6, 3};
+    units[1][0] = (Unit){'W', 'S', 1, 2, 3, 1, 2, 5, false, COLS-2, 1};
+    units[1][1] = (Unit){'X', 'A', 1, 3, 1, 3, 2, 3, false, COLS-1, 1};
+    units[1][2] = (Unit){'Y', 'S', 1, 2, 3, 1, 2, 5, false, COLS-2, ROWS-2};
+    units[1][3] = (Unit){'Z', 'F', 1, 4, 0, 1, 4, 5, false, COLS-1, ROWS-2};
 }
 
 // Affiche la grille de jeu avec les unités
@@ -61,7 +61,7 @@ bool moveUnit(int team, char unitName, int targetX, int targetY) {
     for (int i = 0; i < NUM_UNITS; i++) {
         // Séléction de l'unité selon le nom
         if (units[team][i].name == unitName) {
-            // Coordonnées de position de l'unité
+            // Distance en x et y de la case cible
             int dx = abs(units[team][i].posX - targetX);
             int dy = abs(units[team][i].posY - targetY);
 
@@ -74,6 +74,7 @@ bool moveUnit(int team, char unitName, int targetX, int targetY) {
                 // Vérification qu'il n'y ai pas déjà une unité sur la case sélectionnée
                 for (int t = 0; t < NUM_TEAMS; t++) {
                     for (int u = 0; u < NUM_UNITS; u++) {
+
                         if (units[t][u].posX == targetX
                         && units[t][u].posY == targetY
                         && units[t][u].health > 0
@@ -97,7 +98,7 @@ bool moveUnit(int team, char unitName, int targetX, int targetY) {
 // Attaque d'une unité vers une unité ennemie
 bool attackUnit(int team, char atkName, char targetName) {
     // Index de l'équipe adverse
-    int adv = team == 0 ? 1 : 0;
+    int adv = 1 - team;
     Unit *attacker = NULL;
     Unit *defender = NULL;
 
@@ -111,21 +112,18 @@ bool attackUnit(int team, char atkName, char targetName) {
         }
     }
 
-    if (attacker
-        && defender
-        && isInRange(attacker, defender)
-        && attacker != defender
-        && attacker->team != defender->team) {
+    if (isInRange(attacker, defender)) {
 
         // Les dégâts infligés sont égaux à la puissance du pion qui frappe réduits de la défense du pion qui est frappé
         int damage = attacker->attack - defender->defense;
-        damage = damage <= 0 ? damage : 1; // minimum 1
+        damage = (damage <= 0) ? 1 : damage; // minimum 1
         defender->health -= damage;
 
         // Contre attaque
-        if (defender->health > 0) { // si défenceure est vivante
+        if (defender->health > 0
+            && isInRange(defender, attacker)) { // si défenceure est vivante
             damage = defender->attack - attacker->defense;
-            damage = damage <= 0 ? damage : 1;
+            damage = (damage <= 0) ? 1 : damage;
             attacker->health -= damage;
         }
 
@@ -142,9 +140,9 @@ bool isInRange(Unit *attacker, Unit *defender) {
     return (dx + dy) <= attacker->range;
 }
 
-// Vérifie si un unité ennemie est à portée
+// Vérifie si une unité ennemie est à portée
 bool ennemyInRange(int team, char atkName){
-    int adv = team == 0 ? 1 : 0;
+    int adv = 1 - team;
     Unit *attacker = NULL;
 
     // initialisation de l'unités attaquante
@@ -179,48 +177,23 @@ bool isTired(int team, char unitName) {
 // Fonction pour la remise à 0 lorsque toutes les unités sont fatiguées
 void isAllTeamTired(int team) {
     int tiredCount = 0;
-    // Compte le nombre d'unité fatiguée dans une équipe
+    int liveCount = 0;
+    // Compte le nombre d'unité vivante et fatiguée dans une équipe
     for (int i = 0; i < NUM_UNITS; i++){
-        if (units[team][i].tired){
-            tiredCount++;
+        if (units[team][i].health > 0) {
+            liveCount++;
+
+            if (units[team][i].tired){
+                tiredCount++;
+            }
         }
     }
-    // Si elles sont toutes fatiguée, remise à 0
-    if (tiredCount == NUM_UNITS){
+    // Si toutes les unités vivantes sont fatiguée, remise à 0 pour elles
+    if (tiredCount == liveCount){
         for (int i = 0; i < NUM_UNITS; i++){
             units[team][i].tired = false;
         }
     }
-}
-
-//
-int evaluatePosition(int aiTeam) {
-    int score = 0;
-    int enemyTeam = 1 - aiTeam;
-
-    for (int i = 0; i < NUM_UNITS; i++) {
-        if (units[aiTeam][i].health > 0) {
-            score += 1000;
-            score += 20 * units[aiTeam][i].health;  // Value health highly
-            // New dynamic element: distance to nearest enemy
-            int minDist = INT_MAX;
-            for (int j = 0; j < NUM_UNITS; j++) {
-                if (units[enemyTeam][j].health > 0) {
-                    int dist = abs(units[aiTeam][i].posX - units[enemyTeam][j].posX) +
-                               abs(units[aiTeam][i].posY - units[enemyTeam][j].posY);
-                    if (dist < minDist) minDist = dist;
-                }
-            }
-            score -= minDist * 10;  // Less score for being closer to enemies
-        }
-    }
-
-    return score;
-}
-
-// Vérifie si les coordonnées sont bien compris dans la grille de jeu
-bool isValidMove(int x, int y) {
-    return x >= 0 && x < COLS && y >= 0 && y < ROWS;
 }
 
 // Vérifie si une équipe a perdu (lorsque toutes ses unités sont mortes ou après 100 coups)
@@ -256,6 +229,9 @@ int determineWinner() {
     if (healthSum[0] > healthSum[1]) {
         return 1;
     } else if (healthSum[1] > healthSum[0]) {
+        return 2;
+    }
+    if (healthSum[0] == healthSum[1]) {
         return 2;
     }
     return 0;
