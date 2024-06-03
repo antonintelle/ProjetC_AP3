@@ -3,13 +3,15 @@
         {
             "type": "cppbuild",
             "label": "C/C++: g++.exe build active file",
-            "command": "C:\\raylib\\w64devkit\\bin\\g++.exe",
+            "command": "C:\\raylib\\w64devkit\\bin\\gcc.exe",
             "args": [
                 "-fdiagnostics-color=always",
                 "-g",
                 "${file}",
                 "-ID:\\C:\\raylib\\raylib\\src",
                 "-L:\\C:\\raylib\\raylib\\src",
+                "src\\gameMotor.c",
+                "src\\gameLoop.c",
                 "-lraylib", "-lopengl32", "-lgdi32", "-lwinmm",
                 "-v",
                 "-o",
