@@ -8,6 +8,7 @@
                 "-fdiagnostics-color=always",
                 "-g",
                 "${file}",
+                "-Wall",
                 "-ID:\\C:\\raylib\\raylib\\src",
                 "-L:\\C:\\raylib\\raylib\\src",
                 "src\\gameMotor.c",

@@ -66,7 +66,7 @@ typedef struct Unit {
 
 extern Unit units[NUM_TEAMS][NUM_UNITS];
 
-void initializeUnits(Unit *units[NUM_TEAMS][NUM_UNITS]);
+void initializeUnits(Unit *units[NUM_TEAMS][NUM_UNITS], int rows, int cols);
 void printBoard(Unit *units[NUM_TEAMS][NUM_UNITS]);
 
 bool isInRange(Unit *attacker, Unit *defender);
@@ -74,13 +74,10 @@ bool ennemyInRange(int team, char atkName, Unit *units[NUM_TEAMS][NUM_UNITS]);
 
 bool moveUnit(int team, char unitName, int targetX, int targetY, Unit *units[NUM_TEAMS][NUM_UNITS]);
 bool canMoveUnit(int team, char unitName, int targetX, int targetY, Unit *units[NUM_TEAMS][NUM_UNITS]);
-void selectUnit(int team, char unitName, bool select, Unit *units[NUM_TEAMS][NUM_UNITS]);
 bool attackUnit(int team, char atkName, char targetName, Unit *units[NUM_TEAMS][NUM_UNITS]);
 
 bool isTired(int team, char unitName, Unit *units[NUM_TEAMS][NUM_UNITS]);
 void isAllTeamTired(int team, Unit *units[NUM_TEAMS][NUM_UNITS]);
-
-bool isValidMove(int x, int y);
 
 bool checkEndGame(int roundCount, Unit *units[NUM_TEAMS][NUM_UNITS]);
 int determineWinner(Unit *units[NUM_TEAMS][NUM_UNITS]);

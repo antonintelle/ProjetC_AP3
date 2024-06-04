@@ -7,7 +7,8 @@
 #define screenWidth 1920
 #define screenHeight 1080
 
-void drawUnits(Unit *units[NUM_TEAMS][NUM_UNITS])
+// Affichage des unités (solats, arcgers, filous)
+void drawUnits(Unit *units[NUM_TEAMS][NUM_UNITS], int rows, int cols)
 {
     for (int team = 0; team < NUM_TEAMS; team++)
     {
@@ -15,57 +16,45 @@ void drawUnits(Unit *units[NUM_TEAMS][NUM_UNITS])
         {
             if (units[team][i]->health > 0)
             {
+                // Equipe bleu
                 if (team == 0)
                 {
                     if (units[team][i]->tired)
                     {
-                        DrawCircle(units[team][i]->posX * screenWidth / COLS + screenWidth / COLS / 2, units[team][i]->posY * screenHeight / ROWS + screenHeight / ROWS / 2 - 5, 60, DARKBLUE);
+                        DrawCircle(units[team][i]->posX * screenWidth / cols + screenWidth / cols / 2, units[team][i]->posY * screenHeight / rows + screenHeight / rows / 2 - 5, 60, DARKBLUE);
                     }
                     else
-                        DrawCircle(units[team][i]->posX * screenWidth / COLS + screenWidth / COLS / 2, units[team][i]->posY * screenHeight / ROWS + screenHeight / ROWS / 2 - 5, 60, BLUE);
+                        DrawCircle(units[team][i]->posX * screenWidth / cols + screenWidth / cols / 2, units[team][i]->posY * screenHeight / rows + screenHeight / rows / 2 - 5, 60, BLUE);
                 }
                 else
+                // Equipe rouge
                 {
                     if (units[team][i]->tired)
                     {
-                        DrawCircle(units[team][i]->posX * screenWidth / COLS + screenWidth / COLS / 2, units[team][i]->posY * screenHeight / ROWS + screenHeight / ROWS / 2 - 5, 60, BROWN);
+                        DrawCircle(units[team][i]->posX * screenWidth / cols + screenWidth / cols / 2, units[team][i]->posY * screenHeight / rows + screenHeight / rows / 2 - 5, 60, BROWN);
                     }
                     else
-                        DrawCircle(units[team][i]->posX * screenWidth / COLS + screenWidth / COLS / 2, units[team][i]->posY * screenHeight / ROWS + screenHeight / ROWS / 2 - 5, 60, RED);
+                        DrawCircle(units[team][i]->posX * screenWidth / cols + screenWidth / cols / 2, units[team][i]->posY * screenHeight / rows + screenHeight / rows / 2 - 5, 60, RED);
                 }
-                char temp[2]; // Liste temporaire
+                char temp[2]; // Liste temporaire pour afficher le type de l'unité
                 temp[0] = units[team][i]->type;
                 temp[1] = '\0';
                 const char *str = temp;
-                DrawText(str, units[team][i]->posX * screenWidth / COLS + screenWidth / COLS / 2 - (MeasureText(str, 50) / 2), units[team][i]->posY * screenHeight / ROWS + screenHeight / ROWS / 2 - 25, 50, BLACK);
+                DrawText(str, units[team][i]->posX * screenWidth / cols + screenWidth / cols / 2 - (MeasureText(str, 50) / 2), units[team][i]->posY * screenHeight / rows + screenHeight / rows / 2 - 25, 50, BLACK);
 
-                // Barre de vie
-                DrawRectangle(units[team][i]->posX * screenWidth / COLS + screenWidth / COLS / 2 - 30,
-                              units[team][i]->posY * screenHeight / ROWS + screenHeight / ROWS / 2 + 30,
+                // Barre de vie des unités
+                DrawRectangle(units[team][i]->posX * screenWidth / cols + screenWidth / cols / 2 - 30,
+                              units[team][i]->posY * screenHeight / rows + screenHeight / rows / 2 + 30,
                               60,
                               10, GRAY);
-                // printf("%f / %f\n", units[team][i]->health, units[team][i]->maxHealth);
-                int healthbar = (int)(60 * (float)(units[team][i]->health) / (float)(units[team][i]->maxHealth));
 
-                DrawRectangle(units[team][i]->posX * screenWidth / COLS + screenWidth / COLS / 2 - 30,
-                              units[team][i]->posY * screenHeight / ROWS + screenHeight / ROWS / 2 + 30,
+                DrawRectangle(units[team][i]->posX * screenWidth / cols + screenWidth / cols / 2 - 30,
+                              units[team][i]->posY * screenHeight / rows + screenHeight / rows / 2 + 30,
                               (int)(60 * (float)(units[team][i]->health) / (float)(units[team][i]->maxHealth)),
                               10, GREEN);
             }
         }
     }
-}
-
-bool moveableUnitInCell(int team, int x, int y, Unit *units[NUM_TEAMS][NUM_UNITS])
-{
-    for (int i = 0; i < NUM_UNITS; i++)
-    {
-        if (units[team][i]->posX == x && units[team][i]->posY == y && units[team][i]->health > 0)
-        {
-            return true;
-        }
-    }
-    return false;
 }
 
 // Afficher une grille sans possibilité de jouer
@@ -76,7 +65,7 @@ void drawGridIA(int rows, int cols, Unit *units[NUM_TEAMS][NUM_UNITS])
     {
         for (int col = 0; col < cols; col++) // Pour chaque colonne
         {
-            // Initialisation des cases
+            // Initialisation des cases de la grille
             grid[row][col].Rec = (Rectangle){screenWidth / cols * col, screenHeight / rows * row, screenWidth / cols, screenHeight / rows};
             grid[row][col].isCliquable = false;
 
@@ -93,7 +82,7 @@ void drawGridIA(int rows, int cols, Unit *units[NUM_TEAMS][NUM_UNITS])
     }
 }
 
-// Afficher une grille avec possibilité de jouer [NEW]
+// Afficher une grille avec possibilité de jouer
 void Grid(int rows,
           int cols,
           Vector2 mousePoint,
@@ -176,12 +165,10 @@ void Grid(int rows,
 #pragma region Attaque
                 for (int i = 0; i < NUM_UNITS; i++)
                 {
-                    if (col == 3 && row == 1)
-                    {
-                        int a = 0;
-                    }
                     if (units[1 - *turn][i]->posX == col && units[1 - *turn][i]->posY == row)
-                        if (isInRange(selectedUnit, units[abs(1 - *turn)][i]))
+                    {
+
+                        if (isInRange(selectedUnit, units[abs(1 - *turn)][i])) // Ennemi à portée d'attaque
                         {
                             grid[row][col].color = MAROON;
                             if (CheckCollisionPointRec(mousePoint, grid[row][col].Rec))
@@ -195,6 +182,20 @@ void Grid(int rows,
                                 }
                             }
                         }
+                    }
+                    else if (col == selectedUnit->posX && row == selectedUnit->posY)
+                    {
+                        if (CheckCollisionPointRec(mousePoint, grid[row][col].Rec))
+                        {
+                            grid[row][col].color = RED;
+                            if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+                            {
+                                *state = Selection;
+                                *turn = abs(1 - *turn);
+                                *nbRound += 1;
+                            }
+                        }
+                    }
                 }
                 printf("\n");
                 break;
@@ -208,13 +209,15 @@ void Grid(int rows,
 
 int main()
 {
-    // Initialization
+    // Initialisation
     //--------------------------------------------------------------------------------------
     const char *TITLE = "THE GAME";
     int turn = 0;
     State state = Selection;
-    Unit *SelectedUnit;
+    Unit *SelectedUnit = malloc(sizeof(Unit));
     Unit *units[NUM_TEAMS][NUM_UNITS];
+    int rows = 5;
+    int cols = 7;
 
     for (int i = 0; i < NUM_TEAMS; i++)
     {
@@ -262,6 +265,18 @@ int main()
         Button ButQuitter = {RecQuitter, BLACK};
 
 #pragma endregion
+#pragma region Options
+        Rectangle recSubRow = {200, screenHeight / 2 - 50, 50, 50};
+        Rectangle recAddRow = {255, screenHeight / 2 - 50, 50, 50};
+        Rectangle recSubCol = {screenWidth - 305, screenHeight / 2 - 50, 50, 50};
+        Rectangle recAddCol = {screenWidth - 250, screenHeight / 2 - 50, 50, 50};
+        Button ButSubRow = {recSubRow, BLACK};
+        Button ButAddRow = {recAddRow, BLACK};
+        Button ButSubCol = {recSubCol, BLACK};
+        Button ButAddCol = {recAddCol, BLACK};
+        Rectangle recBack = {5, 5, 20, 20};
+        Button ButBack = {recBack, BLACK};
+#pragma endregion
         switch (CurrentScreen)
         {
         case TitleScreen:
@@ -273,7 +288,7 @@ int main()
                 {
                     CurrentScreen = TwoPlayer;
                     WaitTime(0.2);
-                    initializeUnits(units);
+                    initializeUnits(units, rows, cols);
                 }
             }
             if (CheckCollisionPointRec(mousePoint, But1vsIA.Rec))
@@ -283,7 +298,7 @@ int main()
                 {
                     CurrentScreen = OnePlayer;
                     WaitTime(0.2);
-                    initializeUnits(units);
+                    initializeUnits(units, rows, cols);
                 }
             }
             if (CheckCollisionPointRec(mousePoint, ButTestIA.Rec))
@@ -292,7 +307,7 @@ int main()
                 if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
                 {
                     CurrentScreen = IATest;
-                    initializeUnits(units);
+                    initializeUnits(units, rows, cols);
                 }
             }
             if (CheckCollisionPointRec(mousePoint, ButCredits.Rec))
@@ -339,11 +354,50 @@ int main()
             break;
 
         case Options:
-            if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+            if (CheckCollisionPointRec(mousePoint, ButSubRow.Rec) && rows > 5)
             {
-                CurrentScreen = TitleScreen;
+                if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+                {
+                    rows--;
+                    ButBack.Col = GRAY;
+                    WaitTime(0.2);
+                }
             }
-            break;
+            if (CheckCollisionPointRec(mousePoint, ButAddRow.Rec) && rows < 13)
+            {
+                if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+                {
+                    rows++;
+                    ButBack.Col = GRAY;
+                    WaitTime(0.2);
+                }
+            }
+            if (CheckCollisionPointRec(mousePoint, ButSubCol.Rec) && cols > 7)
+            {
+                if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+                {
+                    cols--;
+                    ButBack.Col = GRAY;
+                    WaitTime(0.2);
+                }
+            }
+            if (CheckCollisionPointRec(mousePoint, ButAddCol.Rec) && cols < 16)
+            {
+                ButBack.Col = GREEN;
+                if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+                {
+                    cols++;
+                    ButBack.Col = GRAY;
+                    WaitTime(0.2);
+                }
+            }
+            if (CheckCollisionPointRec(mousePoint, ButBack.Rec))
+            {
+                if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+                {
+                    CurrentScreen = TitleScreen;
+                }
+            }
 
         case Credits:
             if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
@@ -384,15 +438,17 @@ int main()
             if (checkEndGame(nbRound, units))
             {
                 ClearBackground(BLACK);
-                // char *winner = [ "bleu", "rouge" ][determineWinner()];
-                // DrawText(strcat("L'équipe ", *winner), screenWidth / 2 - MeasureText(strcat("L'équipe ", *winner), 100) / 2, screenHeight / 2 - 100, 100, WHITE);
-                // DrawText("a gagné !", screenWidth / 2 - MeasureText("a gagné !", 100) / 2, screenHeight / 2, 100, WHITE);
+                if (determineWinner(units) == 1)
+                    DrawText("L'équipe bleu", screenWidth / 2 - MeasureText("L'équipe bleu", 100) / 2, screenHeight / 2 - 100, 100, WHITE);
+                else
+                    DrawText("L'équipe rouge", screenWidth / 2 - MeasureText("L'équipe rouge", 100) / 2, screenHeight / 2 - 100, 100, WHITE);
+                DrawText("a gagné !", screenWidth / 2 - MeasureText("a gagné !", 100) / 2, screenHeight / 2, 100, WHITE);
             }
             else
             {
-                Grid(ROWS, COLS, mousePoint, &turn, &state, SelectedUnit, &nbRound, units);
-                // drawGrid(ROWS, COLS, mousePoint, &turn);
-                drawUnits(units);
+                Grid(rows, cols, mousePoint, &turn, &state, SelectedUnit, &nbRound, units);
+                // drawGrid(rows, COLS, mousePoint, &turn);
+                drawUnits(units, rows, cols);
             }
             break;
 
@@ -408,8 +464,8 @@ int main()
             }
             else
             {
-                Grid(ROWS, COLS, mousePoint, &turn, &state, SelectedUnit, &nbRound, units);
-                drawUnits(units);
+                Grid(rows, cols, mousePoint, &turn, &state, SelectedUnit, &nbRound, units);
+                drawUnits(units, rows, cols);
             }
             break;
 
@@ -417,20 +473,37 @@ int main()
             if (checkEndGame(nbRound, units))
             {
                 ClearBackground(BLACK);
-                // char *winner = [ "bleu", "rouge" ][determineWinner()];
-                // DrawText(strcat("L'équipe ", *winner), screenWidth / 2 - MeasureText(strcat("L'équipe ", *winner), 100) / 2, screenHeight / 2 - 100, 100, WHITE);
-                // DrawText("a gagné !", screenWidth / 2 - MeasureText("a gagné !", 100) / 2, screenHeight / 2, 100, WHITE);
+                if (determineWinner(units) == 1)
+                    DrawText("L'équipe bleu", screenWidth / 2 - MeasureText("L'équipe bleu", 100) / 2, screenHeight / 2 - 100, 100, WHITE);
+                else
+                    DrawText("L'équipe rouge", screenWidth / 2 - MeasureText("L'équipe rouge", 100) / 2, screenHeight / 2 - 100, 100, WHITE);
+                DrawText("a gagné !", screenWidth / 2 - MeasureText("a gagné !", 100) / 2, screenHeight / 2, 100, WHITE);
             }
             else
             {
-                drawGridIA(ROWS, COLS, units);
-                drawUnits(units);
+                aiTurn(turn, units);
+                drawGridIA(rows, COLS, units);
+                drawUnits(units, rows, cols);
+                turn = (1 - turn);
+                WaitTime(1.0);
             }
             break;
 
         case Options:
             ClearBackground(BLACK);
-            DrawText("Options", screenWidth / 2 - MeasureText("Options", 100) / 2, screenHeight / 2 - 100, 100, WHITE);
+            DrawText("Options", screenWidth / 2 - MeasureText("Options", 150) / 2, 25, 150, WHITE);
+            DrawText(TextFormat("Lignes : %d", rows), 200, screenHeight / 2 - 250, 100, WHITE);
+            DrawText(TextFormat("Colonnes : %d", cols), screenWidth - MeasureText(TextFormat("Colonnes : %d", cols), 100) - 200, screenHeight / 2 - 250, 100, WHITE);
+            DrawRectangleRec(ButSubRow.Rec, ButSubRow.Col);
+            DrawText("-", 200, screenHeight / 2 - 50, 50, WHITE);
+            DrawRectangleRec(ButAddRow.Rec, ButAddRow.Col);
+            DrawText("+", 255, screenHeight / 2 - 50, 50, WHITE);
+            DrawRectangleRec(ButSubCol.Rec, ButSubCol.Col);
+            DrawText("-", screenWidth - 305, screenHeight / 2 - 50, 50, WHITE);
+            DrawRectangleRec(ButAddCol.Rec, ButAddCol.Col);
+            DrawText("+", screenWidth - 250, screenHeight / 2 - 50, 50, WHITE);
+            DrawRectangleRec(ButBack.Rec, ButBack.Col);
+            DrawText("X", 30, 10, 20, WHITE);
             break;
 
         case Credits:
@@ -445,7 +518,8 @@ int main()
             DrawText("Raylib", screenWidth / 2 - MeasureText("Raylib", 50) / 2, screenHeight / 2 + 250, 50, WHITE);
             break;
 
-        default:
+        case Stop:
+            CloseWindow();
             break;
         }
 
@@ -463,6 +537,7 @@ int main()
             free(units[i][j]);
         }
     }
+    free(SelectedUnit);
 
     return 0;
 }

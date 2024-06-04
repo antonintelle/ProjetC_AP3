@@ -13,7 +13,7 @@ int evaluateMove(int depth, bool isMaximizingPlayer, int aiTeam, int currentPlay
 int minMax(int depth, bool isMaximizingPlayer, int aiTeam, int currentPlayer, Unit *unit[NUM_TEAMS][NUM_UNITS]);
 void evaluateAllMoves(Unit *unit, int aiTeam, int currentPlayer, bool isMaximizingPlayer, int depth, int *bestScore, Unit **bestUnit, int *bestX, int *bestY, Unit *units[NUM_TEAMS][NUM_UNITS]);
 
-int evaluatePosition(int aiTeam, Unit *units[NUM_TEAMS][NUM_UNITS]);
+int evaluateScore(int aiTeam, Unit *units[NUM_TEAMS][NUM_UNITS]);
 int countLivingUnits(int team, Unit *units[NUM_TEAMS][NUM_UNITS]);
 int totalHealthPoints(int team, Unit *units[NUM_TEAMS][NUM_UNITS]);
 int distanceBetweenUnits(int team, Unit *units[NUM_TEAMS][NUM_UNITS]);

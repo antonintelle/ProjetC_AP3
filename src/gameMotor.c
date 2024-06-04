@@ -11,18 +11,18 @@ Unit GetUnit(int team, int unit)
 }
 
 // Initialisation des unités (solats, arcgers, filous)
-void initializeUnits(Unit *units[NUM_TEAMS][NUM_UNITS])
+void initializeUnits(Unit *units[NUM_TEAMS][NUM_UNITS], int rows, int cols)
 {
     // Player 1
-    *units[0][0] = (Unit){'A', 'A', 0, 3, 1, 3, 2, 3, 3, false, 0, 1};
-    *units[0][1] = (Unit){'B', 'S', 0, 2, 3, 1, 2, 5, 5, false, 1, 1};
-    *units[0][2] = (Unit){'C', 'F', 0, 4, 0, 1, 4, 5, 5, false, 0, 3};
-    *units[0][3] = (Unit){'D', 'S', 0, 2, 3, 1, 2, 5, 5, false, 1, 3};
+    *units[0][0] = (Unit){'A', 'A', 0, 3, 1, 3, 2, 3, 3, false, 0, rows / 4};
+    *units[0][1] = (Unit){'B', 'S', 0, 2, 3, 1, 2, 5, 5, false, 1, rows / 4};
+    *units[0][2] = (Unit){'C', 'F', 0, 4, 0, 1, 4, 5, 5, false, 0, rows - rows / 4 - 1};
+    *units[0][3] = (Unit){'D', 'S', 0, 2, 3, 1, 2, 5, 5, false, 1, rows - rows / 4 - 1};
     // Player 2
-    *units[1][0] = (Unit){'W', 'S', 1, 2, 3, 1, 2, 5, 5, false, 5, 1};
-    *units[1][1] = (Unit){'X', 'A', 1, 3, 1, 3, 2, 3, 3, false, 6, 1};
-    *units[1][2] = (Unit){'Y', 'S', 1, 2, 3, 1, 2, 5, 5, false, 5, 3};
-    *units[1][3] = (Unit){'Z', 'F', 1, 4, 0, 1, 4, 5, 5, false, 6, 3};
+    *units[1][0] = (Unit){'W', 'S', 1, 2, 3, 1, 2, 5, 5, false, cols - 2, rows / 4};
+    *units[1][1] = (Unit){'X', 'A', 1, 3, 1, 3, 2, 3, 3, false, cols - 1, rows / 4};
+    *units[1][2] = (Unit){'Y', 'S', 1, 2, 3, 1, 2, 5, 5, false, cols - 2, rows - rows / 4 - 1};
+    *units[1][3] = (Unit){'Z', 'F', 1, 4, 0, 1, 4, 5, 5, false, cols - 1, rows - rows / 4 - 1};
 }
 
 // Affiche la grille de jeu avec les unités
@@ -103,7 +103,7 @@ bool canMoveUnit(int team, char unitName, int targetX, int targetY, Unit *units[
             int dy = abs(units[team][i]->posY - targetY);
 
             // si la case sélectionnée est à distance de déplacement de l'unité
-            if ((dx + dy) <= units[team][i]->movement && targetX >= 0 && targetX < COLS && targetY >= 0 && targetY < ROWS)
+            if ((dx + dy) <= units[team][i]->movement && targetX >= 0)
             {
                 // Vérification qu'il n'y ai pas déjà une unité sur la case sélectionnée
                 for (int t = 0; t < NUM_TEAMS; t++)
@@ -124,17 +124,6 @@ bool canMoveUnit(int team, char unitName, int targetX, int targetY, Unit *units[
     }
     // Mouvement impossible
     return false;
-}
-
-void selectUnit(int team, char unitName, bool select, Unit *units[NUM_TEAMS][NUM_UNITS])
-{
-    for (int i = 0; i < NUM_UNITS; i++)
-    {
-        if (units[team][i]->name == unitName)
-        {
-            units[team][i]->selected = select;
-        }
-    }
 }
 
 // Attaque d'une unité vers une unité ennemie
@@ -255,12 +244,6 @@ void isAllTeamTired(int team, Unit *units[NUM_TEAMS][NUM_UNITS])
             units[team][i]->tired = false;
         }
     }
-}
-
-// Vérifie si les coordonnées sont bien compris dans la grille de jeu
-bool isValidMove(int x, int y)
-{
-    return x >= 0 && x < COLS && y >= 0 && y < ROWS;
 }
 
 // Vérifie si une équipe a perdu (lorsque toutes ses unités sont mortes ou après 100 coups)
